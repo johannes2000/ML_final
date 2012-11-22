@@ -1,0 +1,2 @@
+[bestc_aud bestg_aud grid_audio g_params_aud c_params_aud] = svm_find_libsvm_parameters_v5_audio_only;
+[Yt_pred_prob_estimates_aud Yt_pred_prob_estimates_lyr Yq_pred_prob_estimates_aud Yq_pred_prob_estimates_lyr] = svm_predict_libsvm_lyrics_and_audio_v1(lyrics_c lyrics_g bestc_aud bestg_aud)
