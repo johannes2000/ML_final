@@ -1,6 +1,23 @@
 [bestc_aud bestg_aud grid_audio g_params_aud c_params_aud] = svm_find_libsvm_parameters_v5_2_audio_only %find best audio params
+
+string = 'bestc_aud bestg_aud g_params_aud c_params_aud';
+string2 = [num2str(bestc_aud), num2str(bestg_aud), num2str(g_params_aud), num2str(c_params_aud)];
+string3 =  [string, string2];
+save('-ascii', 'results_audio.txt','string3');
+save('results_audio.mat','string3');
+save('-ascii', 'results_audio_grid.txt','grid_audio');
+save('results_grid_audio.mat','grid_audio');
+
 [bestc_lyr bestg_lyr grid_lyrics g_params_lyr c_params_lyr] = svm_find_libsvm_parameters_v5_2b_lyrics_only %find best lyric params
 % predict 2 probability matrices
+string = 'bestc_lyr bestg_lyr g_params_lyr c_params_lyr'
+string2 = [num2str(bestc_lyr), num2str(bestg_lyr), num2str(g_params_lyr), num2str(c_params_lyr)]
+string3 =  [string, string2]
+save('-ascii', 'results_lyrics.txt','string3');
+save('results_lyrics.mat','string3');
+save('-ascii', 'results_lyrics_grid.txt','grid_lyrics');
+save('results_grid_lyrics.mat','grid_lyrics');
+
 [Yt_pred_prob_estimates_aud Yt_pred_prob_estimates_lyr Yq_pred_prob_estimates_aud Yq_pred_prob_estimates_lyr] = svm_predict_libsvm_lyrics_and_audio_v1(bestc_lyr, bestg_lyr, bestc_aud, bestg_aud)
 
 %% this is from svm_predict_libsvm_ranking_from_lyrics_and_audio_probs_v2.m
