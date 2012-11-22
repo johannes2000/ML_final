@@ -6,7 +6,7 @@ string3 =  [string, string2];
 save('-ascii', 'results_audio.txt','string3');
 save('results_audio.mat','string3');
 save('-ascii', 'results_audio_grid.txt','grid_audio');
-save('results_grid_audio.mat','grid_audio');
+save('results_grid_audio.mat','grid_audio'); %all of this should really be in a struct
 
 [bestc_lyr bestg_lyr grid_lyrics g_params_lyr c_params_lyr] = svm_find_libsvm_parameters_v5_2b_lyrics_only %find best lyric params
 % predict 2 probability matrices
