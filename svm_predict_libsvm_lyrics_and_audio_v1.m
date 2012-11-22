@@ -3,12 +3,11 @@ function [Yt_pred_prob_estimates_aud Yt_pred_prob_estimates_lyr Yq_pred_prob_est
 %% you come in with the parameters for the two SVM's
 %% for actual prediction
 
-lyrics_c = 5; %TBD
-lyrics_g = -9; %TBD
+%lyrics_c = 5; %TBD
+%lyrics_g = -9; %TBD
+
 %audio_c = 10;
 %audio_g = -8;
-audio_c = bestc_aud;
-audio_g = bestg_aud;
 
 
 %% load data

@@ -1,5 +1,7 @@
-[bestc_aud bestg_aud grid_audio g_params_aud c_params_aud] = svm_find_libsvm_parameters_v5_2_audio_only;
-[Yt_pred_prob_estimates_aud Yt_pred_prob_estimates_lyr Yq_pred_prob_estimates_aud Yq_pred_prob_estimates_lyr] = svm_predict_libsvm_lyrics_and_audio_v1(lyrics_c, lyrics_g, bestc_aud, bestg_aud);
+[bestc_aud bestg_aud grid_audio g_params_aud c_params_aud] = svm_find_libsvm_parameters_v5_2_audio_only %find best audio params
+[bestc_lyr bestg_lyr grid_lyrics g_params_lyr c_params_lyr] = svm_find_libsvm_parameters_v5_2b_lyrics_only %find best lyric params
+% predict 2 probability matrices
+[Yt_pred_prob_estimates_aud Yt_pred_prob_estimates_lyr Yq_pred_prob_estimates_aud Yq_pred_prob_estimates_lyr] = svm_predict_libsvm_lyrics_and_audio_v1(bestc_lyr, bestg_lyr, bestc_aud, bestg_aud)
 
 %% this is from svm_predict_libsvm_ranking_from_lyrics_and_audio_probs_v2.m
 
@@ -112,6 +114,7 @@ for log2c = -5:2:15, %%MOD
 end
 
 %%
+save('gotallthewaytoend.mat')
 contourf(grid);
 g_params
 c_params'
@@ -125,4 +128,5 @@ rand_Yq = zeros(size(Yq_pred_both_interact_scaled,1),1);
 [Yq_pred2, ~, Yq_pred2_prob_estimates] = svmpredict(rand_Yq, Yq_pred_both_interact_scaled, bestmodel, '-b 1');
 
 final_ranks = get_ranks(Yq_pred2_prob_estimates);
-save('-ascii', 'ranks_final_t2.txt','final_ranks');
+save('-ascii', 'ranks_final_cv_la_t2.txt','final_ranks');
+save('gotallthewaytoend2.mat')
