@@ -9,7 +9,7 @@ function [Yt_pred_prob_estimates_aud Yt_pred_prob_estimates_lyr Yq_pred_prob_est
 %audio_c = 10;
 %audio_g = -8;
 
-
+keyboard;
 %% load data
 %clear;
 load ../data/music_dataset.mat
@@ -51,17 +51,15 @@ Xq_audio_scaled = Xt_Xq_audio_scaled(Xt_length+1:end,:);
 
 
 %% predicting lyrics
-log2c = lyrics_c;
-log2g = lyrics_g;
 
 Yq_rand = zeros(size(Xq_lyrics_scaled,1),1); %any random vect will do here
 
-cmd = ['-t 2 -b 1 -h 0 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
+cmd = ['-t 2 -b 1 -h 0 -c ', num2str(lyrics_c), ' -g ', num2str(lyrics_g)];
 libsvmmodel_lyr = svmtrain(Yt, Xt_lyrics_scaled, cmd); %learn model on test set %takes about 10 min or so
 %this predicts on the testing set the model was trained on.
 [Yt_pred_lyr, Yt_pred_accuracy_lyr, Yt_pred_prob_estimates_lyr] = svmpredict(Yt, Xt_lyrics_scaled, libsvmmodel_lyr, '-b 1');
 %and on the quiz set.
-[Yq_pred_lyr, Yq_pred_accuracy_lyr, Yq_pred_prob_estimates_lyr] = svmpredict(Yq_rand, Xq_lyrics_scaled, libsvmmodel_lyr, '-b 1');
+[Yq_pred_lyr, ~, Yq_pred_prob_estimates_lyr] = svmpredict(Yq_rand, Xq_lyrics_scaled, libsvmmodel_lyr, '-b 1');
 %accuracy is meaningless, because Yq_rand is
 
 
@@ -71,12 +69,12 @@ log2g = audio_g;
 
 Yq_rand = zeros(size(Xq_lyrics_scaled,1),1); %any random vect will do here
 
-cmd = ['-t 2 -b 1 -h 0 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
+cmd = ['-t 2 -b 1 -h 0 -c ', num2str(audio_c), ' -g ', num2str(audio_g)];
 libsvmmodel_aud = svmtrain(Yt, Xt_audio_scaled, cmd); %learn model on test set %takes 3 min
 %this predicts on the testing set the model was trained on.
 [Yt_pred_aud, Yt_pred_accuracy_aud, Yt_pred_prob_estimates_aud] = svmpredict(Yt, Xt_audio_scaled, libsvmmodel_aud, '-b 1'); %64.92% accuracy
 %and on the quiz set.
-[Yq_pred_aud, Yq_pred_accuracy_aud, Yq_pred_prob_estimates_aud] = svmpredict(Yq_rand, Xq_audio_scaled, libsvmmodel_aud, '-b 1');
+[Yq_pred_aud, ~, Yq_pred_prob_estimates_aud] = svmpredict(Yq_rand, Xq_audio_scaled, libsvmmodel_aud, '-b 1');
 %accuracy is meaningless, because Yq_rand is
 
 %%
