@@ -1,3 +1,5 @@
+%{
+
 [bestc_aud bestg_aud grid_audio g_params_aud c_params_aud] = svm_find_libsvm_parameters_v5_2_audio_only %find best audio params
 
 string = 'bestc_aud bestg_aud g_params_aud c_params_aud';
@@ -18,6 +20,9 @@ save('results_lyrics.mat','string3');
 save('-ascii', 'results_lyrics_grid.txt','grid_lyrics');
 save('results_grid_lyrics.mat','grid_lyrics');
 
+%}
+
+
 %% this stuff ran through, with these results:
 bestc_lyr = 2^7;
 bestg_lyr = 2^(-9);
@@ -29,6 +34,7 @@ bestg_aud = 2^(-6);
 
 %turns out the pred_prob_estimates_* are shit and don't reflec the choice
 %that really goes into the prediction (
+%}
 
 %%
 %save('simplepredictions_aud_lyr_t_q.mat', 'Yt_pred_aud', 'Yt_pred_lyr', 'Yq_pred_aud', 'Yq_pred_lyr');
@@ -164,7 +170,6 @@ Yt_pred_both_interact_binary = feature_operation_joined_binary_with_interaction(
 Yq_pred_both_interact_binary = feature_operation_joined_binary_with_interaction(Yq_pred_aud, Yq_pred_lyr);
 
 
-
 %% 6) finding a model that joins both predictions minimizing rank_loss
 %ini 
 
@@ -240,13 +245,14 @@ for log2c = -5:2:25, %%MOD (-5 to 15??)
     %keyboard;
     c_idx = c_idx + 1; %look where you are in the c loop
     c_params(c_idx) = log2c;
-    cmd_cross_val = ['-t 0 -v 4 -h 0 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)]; %MOD
+    %cmd_cross_val = ['-t 0 -v 4 -h 0 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)]; %MOD
+    cmd_cross_val = ['-t 0 -v 4 -h 0 -c ', num2str(2^log2c)]; %MOD
     cv = svmtrain(Y, X_scaled, cmd_cross_val);
     if (cv >= bestcv), %outputs the accuracy
-      bestcv = cv; bestc = 2^log2c; bestg = 2^log2g;
+      bestcv = cv; bestc = 2^log2c; % bestg = 2^log2g;
     end
     grid(c_idx) = cv;
-    fprintf('%g %g (best c=%g, bestcv=%g)\n', log2c, log2g, cv, bestc, bestcv);
+    fprintf('%g %g (best c=%g, bestcv=%g)\n', log2c, cv, bestc, bestcv);
  
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % this actually creates model to predict, and gets the rank error
@@ -275,7 +281,7 @@ for log2c = -5:2:25, %%MOD (-5 to 15??)
 end
 
 %%
-save('gotallthewaytoend.mat')
+save('gotallthewaytoend_usingBestSingle_CgridLinear_96.3.mat')
 %contourf(grid);
 %g_params
 c_params'
@@ -297,7 +303,7 @@ save('gotallthewaytoend2.mat')
 
 rand_Yt = zeros(size(Yt_pred_both_interact_binary,1),1);
 rand_Yq = zeros(size(Yq_pred_both_interact_binary,1),1);
-[Yt_pred2f, ~, Yt_pred2f_prob_estimates] = svmpredict(rand_Yt, Yt_pred_both_interact_binary, bestmodel);
+[Yt_pred2f, ~, Yt_pred2f_prob_estimates] = svmpredict(Yt, Yt_pred_both_interact_binary, bestmodel);
 [Yq_pred2f, ~, Yq_pred2f_prob_estimates] = svmpredict(rand_Yq, Yq_pred_both_interact_binary, bestmodel);
 
 imputation_order = impute_make_order_based_on_mistakes(Yt_pred2f, Yt);
@@ -305,6 +311,7 @@ Yt_pred2f_ranks = impute(Yt_pred2f, imputation_order);
 Yq_pred2f_ranks = impute(Yq_pred2f, imputation_order);
 rankloss(Yt_pred2f_ranks, Yt)
 
+%%
 %final_ranks = get_ranks(Yq_pred2_prob_estimates);
 save('-ascii', 'Yq_pred2f_ranks_binary_noProb.txt','Yq_pred2f_ranks');
 save('gotallthewaytoend2.mat')
