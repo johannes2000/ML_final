@@ -1,4 +1,4 @@
-function [model_aud model_lyr] = svm_predict_libsvm_lyrics_and_audio_v2(lyrics_c, lyrics_g, audio_c, audio_g)
+function [modelaud modellyr] = svm_predict_libsvm_lyrics_and_audio_v2(lyrics_c, lyrics_g, audio_c, audio_g)
 %{
 %Yt_pred_prob_estimates_aud 
 Yt_pred_prob_estimates_lyr 
@@ -43,11 +43,11 @@ Xt_length = size(Xt_lyrics,1); %num of examples in testing set same for audio an
 Xt_Xq_lyrics = vertcat(Xt_lyrics, Xq_lyrics);
 
 data = Xt_Xq_lyrics ;
-model_lyr.min = min(data,[],1); %vector of minimums
-model_lyr.range = max(data,[],1)-min(data,[],1);
+modellyr.min = min(data,[],1); %vector of minimums
+modellyr.range = max(data,[],1)-min(data,[],1);
 
 %rescales with 
-Xt_Xq_lyrics_scaled = rescalify(Xt_Xq_lyrics, model_lyr.min, model_lyr.range);
+Xt_Xq_lyrics_scaled = rescalify(Xt_Xq_lyrics, modellyr.min, modellyr.range);
 
 clear Xt_Xq_lyrics;
 
@@ -72,10 +72,10 @@ Xq_lyrics_scaled = Xt_Xq_lyrics_scaled(Xt_length+1:end,:); %check: mat dim look 
 Xt_Xq_audio = vertcat(Xt_audio, Xq_audio);
 
 data = Xt_Xq_audio ;
-model_aud.min = min(data,[],1); %vector of minimums
-model_aud.range = max(data,[],1)-min(data,[],1);
+modelaud.min = min(data,[],1); %vector of minimums
+modelaud.range = max(data,[],1)-min(data,[],1);
 
-Xt_Xq_audio_scaled = rescalify(Xt_Xq_audio, model_aud.min, model_aud.range);
+Xt_Xq_audio_scaled = rescalify(Xt_Xq_audio, modelaud.min, modelaud.range);
 %Xt_Xq_audio_scaled = (data - repmat(min(data,[],1),size(data,1),1))*spdiags(1./(max(data,[],1)-min(data,[],1))',0,size(data,2),size(data,2));
 % breaking audio back up
 
@@ -92,11 +92,11 @@ clear Xt_length;
 Yq_rand = zeros(size(Xq_lyrics_scaled,1),1); %any random vect will do here
 
 cmd = ['-t 2 -b 1 -h 0 -c ', num2str(lyrics_c), ' -g ', num2str(lyrics_g)];
-model_lyr.model = svmtrain(Yt, Xt_lyrics_scaled, cmd); %learn model on test set %takes about 10 min or so
+modellyr.model = svmtrain(Yt, Xt_lyrics_scaled, cmd); %learn model on test set %takes about 10 min or so
 %this predicts on the testing set the model was trained on.
-[model_lyr.Yt_pred_lyr, model_lyr.Yt_pred_accuracy_lyr, model_lyr.Yt_pred_prob_estimates_lyr] = svmpredict(Yt, Xt_lyrics_scaled, model_lyr.model, '-b 1');
+[modellyr.Yt_pred_lyr, modellyr.Yt_pred_accuracy_lyr, modellyr.Yt_pred_prob_estimates_lyr] = svmpredict(Yt, Xt_lyrics_scaled, modellyr.model, '-b 1');
 %and on the quiz set.
-[model_lyr.Yq_pred_lyr, ~, model_lyr.Yq_pred_prob_estimates_lyr] = svmpredict(Yq_rand, Xq_lyrics_scaled, model_lyr.model, '-b 1');
+[modellyr.Yq_pred_lyr, ~, modellyr.Yq_pred_prob_estimates_lyr] = svmpredict(Yq_rand, Xq_lyrics_scaled, modellyr.model, '-b 1');
 %accuracy is meaningless, because Yq_rand is
 
 
@@ -107,11 +107,11 @@ log2g = audio_g;
 Yq_rand = zeros(size(Xq_lyrics_scaled,1),1); %any random vect will do here
 
 cmd = ['-t 2 -b 1 -h 0 -c ', num2str(audio_c), ' -g ', num2str(audio_g)];
-model_aud.model = svmtrain(Yt, Xt_audio_scaled, cmd); %learn model on test set %takes 3 min
+modelaud.model = svmtrain(Yt, Xt_audio_scaled, cmd); %learn model on test set %takes 3 min
 %this predicts on the testing set the model was trained on.
-[model_aud.Yt_pred_aud, model_aud.Yt_pred_accuracy_aud, model_aud.Yt_pred_prob_estimates_aud] = svmpredict(Yt, Xt_audio_scaled, model_aud.model, '-b 1'); %64.92% accuracy
+[modelaud.Yt_pred_aud, modelaud.Yt_pred_accuracy_aud, modelaud.Yt_pred_prob_estimates_aud] = svmpredict(Yt, Xt_audio_scaled, modelaud.model, '-b 1'); %64.92% accuracy
 %and on the quiz set.
-[model_aud.Yq_pred_aud, ~, model_aud.Yq_pred_prob_estimates_aud] = svmpredict(Yq_rand, Xq_audio_scaled, model_aud.model, '-b 1');
+[modelaud.Yq_pred_aud, ~, modelaud.Yq_pred_prob_estimates_aud] = svmpredict(Yq_rand, Xq_audio_scaled, modelaud.model, '-b 1');
 %accuracy is meaningless, because Yq_rand is
 
 %%
