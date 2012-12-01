@@ -17,11 +17,13 @@ function ranks = make_final_prediction(model, example)
 % YOUR CODE GOES HERE
 % THIS IS JUST AN EXAMPLE
 %%
-
+%% FOR SIMULATION / DEBUGGING
+load('exampledata.mat');
+example = exampletest;
 % We only take in one example at a time.
 
 %%
-%load('my_model.mat');
+load('my_model.mat');
 X_lyr = make_lyrics_sparse(example, model.vocab);
 X_aud = make_audio(example);
 

@@ -14,5 +14,5 @@ function [model] = init_model(vocab)
 % it in a .mat file, and load it here.
 
 load('my_model.mat','model');
-%model.vocab = vocab;
+model.vocab = vocab;
 
